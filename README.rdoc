@@ -7,13 +7,8 @@ can in easy way auto translate them via {Google Translate}[http://translate.goog
 
 == Installation
 
-As gem
-
-    gem install goobalize3
-
-As plugin
-
-    rails plugin install git@github.com:pioz/goobalize3.git
+* As gem: put <tt>gem 'goobalize3'</tt> in your Gemfile
+* As plugin: run <tt>rails plugin install git@github.com:pioz/goobalize3.git</tt>
 
 == Requirements
 
