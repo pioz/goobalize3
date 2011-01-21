@@ -11,6 +11,8 @@ Gem::Specification.new do |s|
   s.homepage    = ""
   s.summary     = %q{Auto translate with Google Translate the Globalize3 attributes}
   s.description = s.summary
+  s.add_dependency('globalize3')
+
 
   s.rubyforge_project = "goobalize3"
 
