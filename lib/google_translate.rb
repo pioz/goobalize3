@@ -31,9 +31,10 @@ module GoogleTranslate
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     response, data = http.post(SERVICE, query_string, 'X-HTTP-Method-Override' => 'GET')
     json = JSON.parse(data)
-    raise GoogleTranslateException.new(json['error']['errors'].first['message']) if json['error']
     if json['data'] && json['data']['translations'] && json['data']['translations'].first['translatedText']
       return CGI::unescapeHTML(json['data']['translations'].first['translatedText'])
+    elsif json['error'] && json['error']['errors'] && json['error']['errors'].first['message']
+      raise GoogleTranslateException.new(json['error']['errors'].first['message'])
     else
       raise GoogleTranslateException.new('Unknown error')
     end
