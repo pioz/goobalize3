@@ -2,8 +2,9 @@ module GoogleTranslate
   require 'net/http'
   require 'json'
 
-  HOST    = 'www.googleapis.com'
-  SERVICE = '/language/translate/v2'
+  HOST        = 'www.googleapis.com'
+  SERVICE     = '/language/translate/v2'
+  QUERY_LIMIT = 5000
 
   def self.get_api
     config_file = "#{Rails.root}/config/google_translate.yml"
@@ -20,15 +21,15 @@ module GoogleTranslate
 
   def self.perform(params)
     @@goole_translate_api ||= get_api
-    params[:q] = CGI::escape(params[:q])
-    params.merge!(:key => @@goole_translate_api)
+    params[:q] = CGI::escape(params[:q].to_s[0..QUERY_LIMIT])
+    params.merge!(:key => @@goole_translate_api, :format => 'html')
     data = []
     params.each_pair { |k,v| data << "#{k}=#{v}" }
     query_string = data.join('&')
     http = Net::HTTP.new(HOST, 443)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    response, data = http.get("#{SERVICE}?#{query_string}")
+    response, data = http.post(SERVICE, query_string, 'X-HTTP-Method-Override' => 'GET')
     json = JSON.parse(data)
     raise GoogleTranslateException.new(json['error']['errors'].first['message']) if json['error']
     if json['data'] && json['data']['translations'] && json['data']['translations'].first['translatedText']
