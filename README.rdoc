@@ -1,0 +1,41 @@
+= Goobalize3
+
+Goobalize3 (Google + Globalize3) is useful to auto translate the attributes of your activerecord models.
+
+If you have a model with some attributes translated with {Globalize3}[https://github.com/svenfuchs/globalize3] you
+can in easy way auto translate them via {Google Translate}[http://translate.google.com].
+
+== Installation
+
+As gem
+
+    gem install goobalize3
+
+As plugin
+
+    rails plugin install git@github.com:pioz/goobalize3.git
+
+== Requirements
+
+* Globalize3
+
+== Usage
+
+You can auto translate all globalized attributes of an activerecord object with
+
+    @post.translate
+
+this translate the attributes from current set locale (<tt>I18n.locale</tt>) to all available locales (<tt>I18n.available_locales - I18n.locale</tt>).
+
+You can set also the target locales
+
+    @post.translate([:it, :en, :de])
+
+== Questions or problems?
+
+If you have any issues with Goobalize3 please add an {issue on GitHub}[https://github.com/pioz/goobalize3/issues]
+or fork the project and send a pull request.
+
+== Copyright
+
+Copyright (c) 2010 Enrico Pilotto.
