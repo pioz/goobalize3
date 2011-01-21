@@ -1,1 +1,1 @@
-require 'goobalize'
+require 'goobalize3'

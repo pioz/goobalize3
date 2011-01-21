@@ -1,10 +1,12 @@
 module Goobalize3
   require File.expand_path('../google_translate', __FILE__)
 
-  def translate(targets = nil)
+  def translate(*args)
     if self.class.translates?
       cur_locale = I18n.locale
-      targets ||= I18n.available_locales - [I18n.locale]
+      targets = I18n.available_locales - [I18n.locale]
+      args.map!{|l| l.to_s.downcase.to_sym}
+      targets = targets & args unless args.empty?
       targets.each do |locale|
         autotranslated_attributes = {}
         self.class.translated_attribute_names.each do |attr_name|

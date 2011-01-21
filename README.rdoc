@@ -29,7 +29,7 @@ this translate the attributes from current set locale (<tt>I18n.locale</tt>) to 
 
 You can set also the target locales
 
-    @post.translate([:it, :en, :de])
+    @post.translate(:it, :en, :de)
 
 == Questions or problems?
 
