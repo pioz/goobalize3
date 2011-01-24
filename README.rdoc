@@ -10,6 +10,12 @@ can in easy way auto translate them via {Google Translate}[http://translate.goog
 * As gem: put <tt>gem 'goobalize3'</tt> in your Gemfile
 * As plugin: run <tt>rails plugin install git@github.com:pioz/goobalize3.git</tt>
 
+Now create <tt>google_translate.yml</tt> file in your rails config folder and put the follow line:
+
+    api : YOUR_GOOGLE_TRANSLATE_API_KEY
+
+You can get api key at {Google apis console page}[https://code.google.com/apis/console/].
+
 == Requirements
 
 * Globalize3
