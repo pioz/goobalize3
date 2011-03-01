@@ -5,6 +5,9 @@ module GoogleTranslate
   HOST        = 'www.googleapis.com'
   SERVICE     = '/language/translate/v2'
   QUERY_LIMIT = 5000
+  LOCALES_MAP = {
+    :cn => :'zh-CN'
+  }
 
   def self.get_api
     config_file = "#{Rails.root}/config/google_translate.yml"
@@ -19,9 +22,16 @@ module GoogleTranslate
     return nil
   end
 
+  def self.map(locale)
+    mapped = LOCALES_MAP[locale]
+    mapped.nil? ? locale : mapped
+  end
+
   def self.perform(params)
     @@goole_translate_api ||= get_api
     params[:q] = CGI::escape(params[:q].to_s[0..QUERY_LIMIT])
+    params[:source] = map params[:source]
+    params[:target] = map params[:target]
     params.merge!(:key => @@goole_translate_api, :format => 'html')
     data = []
     params.each_pair { |k,v| data << "#{k}=#{v}" }
