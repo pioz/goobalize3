@@ -11,8 +11,9 @@ module Goobalize3
         autotranslated_attributes = {}
         self.class.translated_attribute_names.each do |attr_name|
           begin
-            autotranslated_attributes[attr_name] = GoogleTranslate.perform(:source => cur_locale, :target => locale, :q => self.send(attr_name))
+            autotranslated_attributes[attr_name] = GoogleTranslate.perform(:source => cur_locale, :target => locale, :q => self.send(attr_name, cur_locale))
           rescue GoogleTranslateException => e
+            Rails.logger.error(e.to_s)
           end
         end
         I18n.locale = locale
