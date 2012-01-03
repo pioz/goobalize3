@@ -1,10 +1,10 @@
-module GoogleTranslate
+module BingTranslate
   require 'net/http'
   require 'json'
 
-  HOST        = 'www.googleapis.com'
-  SERVICE     = '/language/translate/v2'
-  QUERY_LIMIT = 5000
+  HOST        = 'api.microsofttranslator.com'
+  SERVICE     = '/V2/Http.svc/Translate'
+  QUERY_LIMIT = 2000000
   LOCALES_MAP = {
     :cn => :'zh-CN'
   }
@@ -28,18 +28,19 @@ module GoogleTranslate
   end
 
   def self.perform(params)
-    @@goole_translate_api ||= get_api
-    params[:q] = CGI::escape(params[:q].to_s[0..QUERY_LIMIT])
-    params[:source] = map params[:source]
-    params[:target] = map params[:target]
-    params.merge!(:key => @@goole_translate_api, :format => 'html')
+    query[:text] = CGI::escape(params[:q].to_s[0..QUERY_LIMIT])
+    query[:from] = map params[:source]
+    query[:to] = map params[:target]
+    query.merge!(:appId => 'DC63F9F0F8805837BEA3247EB2EBF0EB4C0A3D3A', :contentType => 'text/html', :category => 'general')
     data = []
-    params.each_pair { |k,v| data << "#{k}=#{v}" }
+    query.each_pair { |k,v| data << "#{k}=#{v}" }
     query_string = data.join('&')
     http = Net::HTTP.new(HOST, 443)
     http.use_ssl = true
     http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     response, data = http.post(SERVICE, query_string, 'X-HTTP-Method-Override' => 'GET')
+    puts response.body
+    puts data
     if response.code == 200
       json = JSON.parse(data)
       if json['data'] && json['data']['translations'] && json['data']['translations'].first['translatedText']
