@@ -1,5 +1,5 @@
 module Goobalize3
-  require File.expand_path(' ../goobalize_error', __FILE__)
+  require File.expand_path(' ../goobalize_translate_error', __FILE__)
   require File.expand_path('../google_translate', __FILE__)
   require File.expand_path(  '../bing_translate', __FILE__)
 
