@@ -5,6 +5,8 @@ Goobalize3 (Google + Globalize3) is useful to auto translate the attributes of y
 If you have a model with some attributes translated with {Globalize3}[https://github.com/svenfuchs/globalize3] you
 can in easy way auto translate them via {Google Translate}[http://translate.google.com].
 
+With version 0.2.0 Goobalize use Bing to translate because Google Translate service is no more free.
+
 == Requirements
 
 * Globalize3
@@ -14,11 +16,12 @@ can in easy way auto translate them via {Google Translate}[http://translate.goog
 * As gem: put <tt>gem 'goobalize3'</tt> in your Gemfile
 * As plugin: run <tt>rails plugin install git@github.com:pioz/goobalize3.git</tt>
 
-Now create <tt>google_translate.yml</tt> file in your rails config folder and put the follow line:
+Now create <tt>goobalize.yml</tt> file in your rails config folder and put the follow line:
 
-    api : YOUR_GOOGLE_TRANSLATE_API_KEY
+    bing_app_id: YOUR_BING_APP_ID
+    google_api : YOUR_GOOGLE_TRANSLATE_API_KEY
 
-You can get api key at {Google apis console page}[https://code.google.com/apis/console/].
+You can get Google api key at {Google apis console page}[https://code.google.com/apis/console/].
 
 == Usage
 
@@ -31,6 +34,11 @@ this translate the attributes from current set locale (<tt>I18n.locale</tt>) to 
 You can set also the target locales
 
     @post.translate(:it, :en, :de)
+
+The default service is *Bing*. To use Google Translate set:
+
+  GOOBALIZE_SERVICE = :google
+
 
 == Questions or problems?
 
