@@ -1,4 +1,5 @@
 module Goobalize3
+  require File.expand_path(' ../goobalize_error', __FILE__)
   require File.expand_path('../google_translate', __FILE__)
   require File.expand_path(  '../bing_translate', __FILE__)
 
@@ -12,8 +13,12 @@ module Goobalize3
         autotranslated_attributes = {}
         self.class.translated_attribute_names.each do |attr_name|
           begin
-            autotranslated_attributes[attr_name] = GoogleTranslate.perform(:source => cur_locale, :target => locale, :q => self.send(attr_name, cur_locale))
-          rescue GoogleTranslateException => e
+            if GOOBALIZE_SERVICE.to_sym == :google
+              autotranslated_attributes[attr_name] = GoogleTranslate.perform(:source => cur_locale, :target => locale, :q => self.send(attr_name, cur_locale))
+            else
+              autotranslated_attributes[attr_name] = BingTranslate.perform(:source => cur_locale, :target => locale, :q => self.send(attr_name, cur_locale))
+            end
+          rescue GoobalizeTranslateException => e
             Rails.logger.error(e.to_s)
           end
         end

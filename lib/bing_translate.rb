@@ -1,23 +1,22 @@
 module BingTranslate
   require 'net/http'
-  require 'json'
+  require 'nokogiri'
 
-  HOST        = 'api.microsofttranslator.com'
-  SERVICE     = '/V2/Http.svc/Translate'
+  URI         = URI.parse('http://api.microsofttranslator.com/V2/Http.svc/Translate')
   QUERY_LIMIT = 2000000
   LOCALES_MAP = {
-    :cn => :'zh-CN'
+    :cn => :'zh-CNT'
   }
 
   def self.get_api
-    config_file = "#{Rails.root}/config/google_translate.yml"
-    #config_file = File.expand_path('../google_translate.yml', __FILE__)
+    config_file = "#{Rails.root}/config/goobalize.yml"
+    #config_file = File.expand_path('../bing_translate.yml', __FILE__)
     if File.exists?(config_file)
-      @@goole_translate_api = YAML.load_file(config_file)['api']
-      raise GoogleTranslateException.new("No API key found in '#{config_file}'") if @@goole_translate_api.blank?
-      return @@goole_translate_api
+      @@bing_translate_api = YAML.load_file(config_file)['bing_app_id']
+      raise GoobalizeTranslateError.new("No APP ID found in '#{config_file}'") if @@bing_translate_api.blank?
+      return @@bing_translate_api
     else
-      raise GoogleTranslateException.new("No config file found '#{config_file}'")
+      raise GoobalizeTranslateException.new("No config file found '#{config_file}'")
     end
     return nil
   end
@@ -28,41 +27,20 @@ module BingTranslate
   end
 
   def self.perform(params)
+    @@bing_translate_api ||= get_api
+    query = {}
     query[:text] = CGI::escape(params[:q].to_s[0..QUERY_LIMIT])
     query[:from] = map params[:source]
     query[:to] = map params[:target]
-    query.merge!(:appId => 'DC63F9F0F8805837BEA3247EB2EBF0EB4C0A3D3A', :contentType => 'text/html', :category => 'general')
+    query.merge!(:appId => @@bing_translate_api, :contentType => 'text/html', :category => 'general')
     data = []
     query.each_pair { |k,v| data << "#{k}=#{v}" }
     query_string = data.join('&')
-    http = Net::HTTP.new(HOST, 443)
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
-    response, data = http.post(SERVICE, query_string, 'X-HTTP-Method-Override' => 'GET')
-    puts response.body
-    puts data
-    if response.code == 200
-      json = JSON.parse(data)
-      if json['data'] && json['data']['translations'] && json['data']['translations'].first['translatedText']
-        return CGI::unescapeHTML(json['data']['translations'].first['translatedText'])
-      else
-        raise GoogleTranslateException.new(error(json))
-      end
-    else
-      json = JSON.parse(response.body)
-      raise GoogleTranslateException.new(error(json))
-    end
-  end
-
-  private
-
-  def error(json)
-    if json['error'] && json['error']['errors'] && json['error']['errors'].first['message']
-      return json['error']['errors'].first['message']
-    else
-      return 'Unknown error'
+    result = Net::HTTP.new(URI.host, URI.port).get("#{URI.path}?#{query_string}")
+    begin
+      Nokogiri.parse(result.body).xpath('//xmlns:string').first.content
+    rescue
+      raise GoobalizeTranslateError.new('Translation failed')
     end
   end
 end
-
-class GoogleTranslateException < StandardError; end

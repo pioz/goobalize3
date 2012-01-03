@@ -10,14 +10,14 @@ module GoogleTranslate
   }
 
   def self.get_api
-    config_file = "#{Rails.root}/config/google_translate.yml"
+    config_file = "#{Rails.root}/config/goobalize.yml"
     #config_file = File.expand_path('../google_translate.yml', __FILE__)
     if File.exists?(config_file)
-      @@goole_translate_api = YAML.load_file(config_file)['api']
-      raise GoogleTranslateException.new("No API key found in '#{config_file}'") if @@goole_translate_api.blank?
+      @@goole_translate_api = YAML.load_file(config_file)['google_api']
+      raise GoobalizeTranslateError.new("No API key found in '#{config_file}'") if @@goole_translate_api.blank?
       return @@goole_translate_api
     else
-      raise GoogleTranslateException.new("No config file found '#{config_file}'")
+      raise GoobalizeTranslateError.new("No config file found '#{config_file}'")
     end
     return nil
   end
@@ -45,11 +45,11 @@ module GoogleTranslate
       if json['data'] && json['data']['translations'] && json['data']['translations'].first['translatedText']
         return CGI::unescapeHTML(json['data']['translations'].first['translatedText'])
       else
-        raise GoogleTranslateException.new(error(json))
+        raise GoobalizeTranslateError.new(error(json))
       end
     else
       json = JSON.parse(response.body)
-      raise GoogleTranslateException.new(error(json))
+      raise GoobalizeTranslateError.new(error(json))
     end
   end
 
@@ -63,5 +63,3 @@ module GoogleTranslate
     end
   end
 end
-
-class GoogleTranslateException < StandardError; end
